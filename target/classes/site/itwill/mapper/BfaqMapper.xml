@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+이름        널?       유형            
+FNO       NOT NULL NUMBER(5)     -공지글 번호
+FCATEGORY          VARCHAR2(20)  -공지 분류
+FWRITER            VARCHAR2(10)  -공지글 작성자
+FTITLE             VARCHAR2(20)  -공지 제목
+FCONTENT           VARCHAR2(500) -공지 내용
+FSTATUS            NUMBER(1)     -공지 상태
+FDATE              DATE          -공지 업로드 날짜
+-->         
+<mapper namespace="site.itwill.mapper.BfaqMapper">
+	<insert id="insertFaq" parameterType="Bfaq">
+		<selectKey resultType="int" keyProperty="fno" order="BEFORE" >
+			select bfaq_seq.nextval from dual
+		</selectKey>
+			insert into bfaq values(#{fno},#{fcategory},#{fwriter},#{ftitle},#{fcontent},0,fdate)
+	</insert>
+	
+	<update id="updateFaq" >
+		update bfaq set fno=#{fno},fcategory=#{fcategory},fwriter=#{fwriter},ftitle=#{ftitle}
+		,fcontent=#{fcontent},fstatus=#{fstatus},fdate)
+	</update>
+
+	<select id="selectFaq" resultType="int">
+		select count(*)from bfaq 
+	</select>	
+	
+	<select id="selectFaqList" resultType="Bfaq">
+		select * from (select rownum rn, board.*from(select * from bfaq order by fno desc)faq)
+			where rn between #{startRow} and #{endRow}
+	</select>
+</mapper>

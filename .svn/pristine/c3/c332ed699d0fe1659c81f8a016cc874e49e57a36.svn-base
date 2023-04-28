@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+
+	<!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
+	
+	<!-- Enables the Spring MVC @Controller programming model -->
+	<!-- annotation-driven : @Controller 어노테이션을 이용하여 Controller 클래스를 Spring Bean으로
+	등록하여 요청 처리 메소드를 이용하여 요청에 대한 처리가 가능하도록 설정하는 어노테이션 -->
+	<annotation-driven />
+
+	<!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources directory -->
+	<!-- resources : Front Controller를 사용하지 않고 직접 요청하여 응답되도록 설정하는 엘리먼트 -->
+	<!-- => 리소스 파일을 클라이언트에게 직접 제공하기 위해 사용 -->
+	<!-- mapping 속성 : 리소스 파일을 요청할 수 있는 URL 패턴을 속성값으로 설정 -->
+	<!-- => ** 속성값으로 하위 디렉토리를 포함한 모든 리소스 파일을 표현 -->
+	<!-- location 속성 : 리소스 파일이 저장된 디렉토리 경로를 속성값으로 설정 -->
+	<!-- <resources mapping="/resources/**" location="/resources/" />  -->
+	<resources mapping="/images/**" location="/resources/images/" />
+	<resources mapping="/css/**" location="/resources/css/" />
+	<resources mapping="/js/**" location="/resources/js/" />
+	<resources mapping="/plugins/**" location="resources/plugins/" />
+	
+
+	<!-- UrlBasedViewResolver 클래스를 Spring Bean으로 등록 -->
+	<!-- UrlBasedViewResolver : Spring Framework에서 제공하는 ViewResolver가 아닌
+	외부에서 제공하는 ViewResolver를 사용하기 위한 기능을 제공하는 클래스 -->
+	<beans:bean class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+		<!-- viewClass 필드에 외부에서 제공하는 ViewResolver 클래스(TilesView)를 인젝션 처리 -->
+		<beans:property name="viewClass" value="org.springframework.web.servlet.view.tiles3.TilesView"/>
+		<!-- order 필드에 ViewResolver 사용에 대한 우선순위 관련 정수값을 인젝션 처리  -->
+		<!-- => 정수값이 낮을수록 우선순위가 높게 설정 -->
+		<beans:property name="order" value="2"/>
+	</beans:bean>
+	
+	<!-- TilesConfigurer 클래스를 Spring Bean으로 등록 -->
+	<!-- TilesConfigurer : Tiles 프로그램에서 사용할 템플릿 페이지 정보가 저장된 XML 
+	파일(Tiles Configuration File)을 지정하기 위한 클래스 -->
+	<beans:bean class="org.springframework.web.servlet.view.tiles3.TilesConfigurer">
+		<!-- definitions 필드에 List 객체를 생성하여 요소(Tiles Configuration File) 추가하여 인젝션 처리 -->
+		<beans:property name="definitions">
+			<beans:list>
+				<beans:value>/WEB-INF/spring/appServlet/tiles.xml</beans:value>
+			</beans:list>
+		</beans:property>
+	</beans:bean>
+	
+	<!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
+	<!-- InternalResourceViewResolver : 요청 처리 메소드에서 반환되는 ViewName를 전달받아
+	응답 처리하기 위한 JSP 문서로 변환하여 제공하는 클래스 -->
+	<beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<beans:property name="prefix" value="/WEB-INF/views/" />
+		<beans:property name="suffix" value=".jsp" />
+		<beans:property name="order" value="3"/>
+	</beans:bean>
+	
+	
+	<context:component-scan base-package="site.itwill.controller"/>
+	<context:component-scan base-package="site.itwill.dao"/>
+	<context:component-scan base-package="site.itwill.service"/>
+	
+	<!-- AOP 기능을 이용한 트랜젝션 처리 -->
+	<!-- advice : TransactionManager 관련 Spring Bean을 Advisor로 설정하는 엘리먼트 -->
+	<!-- => Advisor : JoinPoint가 자동설정된 횡단관심모듈이 등록된 Advice -->
+	<!-- transaction-manager 속성 : TransactionManager 관련 Spring Bean의 beabName을 속성값으로 설정 -->
+	<!-- attributes : 트랜젝션 처리 관련 정보를 설정하기 위한 상위 엘리먼트 -->
+	<!-- method : 트랜젝션 처리 메소드를 설정하는 엘리먼트 -->
+	<!-- name 속성 : 메소드 이름에 대한 패턴을 속성값으로 설정 -->
+	<!-- rollback-for 속성 : ROLLBACK 명령을 실행하기 위한 예외를 속성값으로 설정 -->
+	<!-- read-only 속성 : false/true(읽기전용) 중 하나를 속성값으로 설정 -->
+	<!-- 
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="add*" rollback-for="Exception"/>
+			<tx:method name="modify*" rollback-for="Exception"/>
+			<tx:method name="erase" rollback-for="Exception"/>
+			<tx:method name="get*" read-only="true"/>
+		</tx:attributes>
+	</tx:advice>
+	 -->
+	
+	<!-- TransactionManager에 의해 설정된 Advisor를 사용하여 AOP 기능을 구현 -->
+	<!-- advisor : advice 엘리먼트로 설정된 Advisor를 사용하기 위한 엘리먼트 -->
+	<!-- advice-ref : advice 엘리먼트의 고유값을 속성값으로 설정 -->
+	<!-- 
+	<aop:config>
+		<aop:advisor advice-ref="txAdvice" pointcut="execution(* site.itwill10.service..*(..))"/>
+	</aop:config>
+	 -->
+<!-- 
+	<beans:bean class="site.itwill.util.AdminAuthInterceptor" id="adminAuthInterceptor"/>
+	<interceptors>
+		<interceptor>
+			<mapping path="/userinfo/join"/>
+			
+			<beans:ref bean="adminAuthInterceptor"/>
+		</interceptor>
+	</interceptors>
+ -->	
+	<beans:bean class="org.springframework.web.multipart.commons.CommonsMultipartResolver" id="multipartResolver">
+		<!-- maxUploadSize 필드에 업로드 파일의 용량 제한크기(Byte)을 인젝션 처리 -->
+		<beans:property name="maxUploadSize" value="20971520"/>
+		<!-- defaultEncoding 필드에 전달값에 대한 캐릭터셋의 인코딩을 인젝션 처리 -->
+		<beans:property name="defaultEncoding" value="utf-8"/>
+	</beans:bean> 
+ 
+ 	<beans:bean class="site.itwill.util.FileDownload" id="fileDownload"/>
+ 
+ 	<beans:bean class="site.itwill.util.AdminAuthInterceptor" id="adminAuthInterceptor"/>
+ 	<beans:bean class="site.itwill.util.LoginAuthInterceptor" id="loginAuthInterceptor"/>
+ 	
+ 	<interceptors>
+ 		<interceptor>
+ 			<mapping path="/admin/"/>
+			
+			<beans:ref bean="adminAuthInterceptor"/>
+ 		</interceptor>
+ 	</interceptors>
+ 	
+ 	<interceptors>
+ 		<interceptor>
+ 			<mapping path="/admin/"/>
+ 			
+ 			<beans:ref bean="loginAuthInterceptor"/>	
+ 		</interceptor>
+ 	</interceptors>
+</beans:beans>

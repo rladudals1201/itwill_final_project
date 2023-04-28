@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="site.itwill.mapper.CartMapper">
+	
+	<insert id="insertCart">
+	<selectKey resultType="int" keyProperty="cartNo" order="BEFORE">
+	select cart_seq.nextval from dual
+	</selectKey>
+	insert into cart values(#{cartNo},#{id},#{name}, #{image},#{qty},#{price},#{num})	
+	</insert>
+
+	<select id="selectCartList" resultType="Cart">
+	select * from cart order by cart_no	
+	</select>
+
+	<select id="selectCart" resultType="Cart">
+	select * from cart where cart_no=#{cartNo}
+	</select>
+
+	<delete id="deleteCart">
+	delete from cart where cart_no=#{cartNo}
+	</delete>
+
+</mapper>

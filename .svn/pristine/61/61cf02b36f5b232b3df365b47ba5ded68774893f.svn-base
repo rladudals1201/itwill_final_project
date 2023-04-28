@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="site.itwill.mapper.ProductMapper">
+	<!-- 1. 상품 저장용 -->
+	<insert id="insertProduct">
+		<selectKey resultType="int" keyProperty="num" order="BEFORE">
+			select product_seq.nextval from dual
+		</selectKey>	
+		insert into product values(#{num},#{code},#{name},#{image},#{detail},#{color},#{qty},#{price},#{image2})
+	</insert>
+
+	 
+	<!-- 2. 카테고리별 상품보기 -->
+	<select id="selectCategoryProductList" resultType="Product">
+		select * from product order by num
+	</select>
+	<!-- 
+		select * from product 
+		<if test="category!=ALL"> 
+			where code like '%' ||  #{category} || '%'
+		</if>	 
+		order by code		
+	 -->
+	
+	<!-- 제품 코드별  -->
+	<select id="selectCodeProduct">
+		select * from product where code=#{code}
+	</select>
+	
+	<select id="selectProduct" resultType="Product">
+		select * from product where num=#{num}
+	</select>
+	<select id="selectProductName" resultType="Product">
+		select * from product where name=#{name}
+	</select>
+	
+	<!-- 제품 정보 수정 -->
+	<update id="updateProduct">
+		update product
+		<set>
+			<if test="code=null and code!=''">
+				code=#{code},
+			</if>
+			<if test="name!=null and name!=''">
+				name=#{name},
+			</if>
+			<if test="detail!=null and detail!=''">
+				detail=#{detail},
+			</if>
+			<if test="color!=null and color!=''">
+				color=#{color},
+			</if>
+			<if test="qty!=null and qty!=''">
+				qty=#{qty},
+			</if>
+			<if test="price!=null and price!=''">
+				price=#{price},
+			</if>
+		</set>
+		where num=#{num}
+	</update>
+	<delete id="deleteProduct">
+		delete from product where num=#{num}
+	</delete>	
+</mapper>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="site.itwill.mapper.ShowMapper">
+	<insert id="insertShow">
+		<selectKey resultType="int" keyProperty="showseq" order="BEFORE">
+			select show_seq.nextval from dual
+		</selectKey>
+		insert into show values(#{showseq},to_date('#{showTime}','yyyy/mm/dd hh24:mi'),#{title},#{theatre},#{shortSummary}
+			,#{showLength},#{posterPicture},#{team},#{playwright},#{rating},#{summary})
+	</insert>
+	
+	<update id="updateShow">
+		update show
+		<set>
+			<if test="showTime!=null and showTime!=''">
+				show_time=#{showTime},
+			</if>
+			<if test="title!=null and title!=''">
+				title=#{title},
+			</if>
+			<if test="theatre!=null and theatre!=''">
+				theatre=#{theatre},
+			</if>
+			<if test="shortSummary!=null and shortSummary!=''">
+				short_summary=#{shortSummary},
+			</if>
+			<if test="showLength!=null and showLength!=''">
+				show_length=#{showLength},
+			</if>
+			<if test="posterPicture!=null and posterPicture!=''">
+				poster_picture=#{posterPicture},
+			</if>
+			<if test="team!=null and team!=''">
+				team=#{team},
+			</if>
+			<if test="playwright!=null and playwright!=''">
+				playwright=#{playwright},
+			</if>
+			<if test="rating!=null and rating!=''">
+				rating=#{rating},
+			</if>
+			<if test="summary!=null and summary!=''">
+				summary=#{summary}
+			</if>
+		</set>
+		where showseq=#{showseq}
+	</update>
+	
+	<delete id="deleteShow">
+		delete from show where showseq=#{showseq}
+	</delete>
+	
+	<select id="selectShow" resultType="Show">
+		select * from show where showseq=#{showseq}
+	</select>
+	
+	<select id="selectShowList" resultType="Show">
+		select * from show order by showseq
+	</select>
+</mapper>

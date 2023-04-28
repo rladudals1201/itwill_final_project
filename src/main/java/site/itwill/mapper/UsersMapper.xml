@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="site.itwill.mapper.UsersMapper">
+	<insert id="insertUsers">
+		<selectKey resultType="int" keyProperty="no" order="BEFORE">
+			select users_seq.nextval from dual
+		</selectKey>
+		insert into users values(#{id}, #{passwd}, #{name}, #{zipcode}
+		, #{address1}, #{address2}, #{address3}, #{phone}, #{email}, #{gender}
+		, 1, null, #{birthday}, sysdate, #{no})
+	</insert>
+	
+	<update id="updateUsers">
+		update users
+		<set>
+			<if test="passwd!=null and passwd!=''">
+				passwd=#{passwd},
+			</if>
+			<if test="name!=null and name!=''">
+				name=#{name},
+			</if>
+			<if test="zipcode!=null and zipcode!=''">
+				zipcode=#{zipcode},
+			</if>
+			<if test="address1!=null and address1!=''">
+				address1=#{address1},
+			</if>
+			<if test="address2!=null and address2!=''">
+				address2=#{address2},
+			</if>
+			<if test="address3!=null and address3!=''">
+				address3=#{address3},
+			</if>
+			<if test="phone!=null and phone!=''">
+				phone=#{phone},
+			</if>
+			<if test="email!=null and email!=''">
+				email=#{email},
+			</if>
+			<if test="gender!=null and gender!=''">
+				gender=#{gender},
+			</if>
+			<if test="birthday!=null and birthday!=''">
+				birthday=#{birthday}
+			</if>
+			<if test="status!=null and status!=''">
+				status=#{status}
+			</if>
+		</set>
+		where id=#{id}
+	</update>
+	
+	<update id="updateUsersLastLogin">
+		update users set last_login=sysdate where id=#{id}
+	</update>
+	
+	<delete id="deleteUsers">
+		delete from users where id=#{id}
+	</delete>
+	
+	<select id="selectUsers" resultType="Users">
+		select * from users where id=#{id}
+	</select>
+
+	<select id="findId" resultType="Users">
+		select * from users where email=#{email} and birthday=#{birthday}
+	</select>
+	
+	<select id="selectUserList" resultType="Users">
+		select * from users order by id
+	</select>
+</mapper>
+
+

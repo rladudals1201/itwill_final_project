@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+이름       널?       유형            
+
+LNO      NOT NULL NUMBER(5)     -분실물 번호
+LID               VARCHAR2(10)  -아이디
+LEMAIL            VARCHAR2(20)  -이메일
+LKIND             VARCHAR2(20)  -종류(작성)
+LCOLOR            VARCHAR2(20)  -색상
+LTITLE            VARCHAR2(20)  -제목
+LCONTENT          VARCHAR2(500) -내용
+LANSWER           VARCHAR2(500) -답변
+LFILE             VARCHAR2(20)  -파일
+LSTATUS           NUMBER(1)     -답변1, 미답변9
+STATUS            NUMBER(1)     -관리자9, 회원1
+LDATE             DATE			-작성일       
+-->    
+
+<mapper namespace="site.itwill.mapper.BlostMapper">
+
+	<insert id="insertlostProducts" >
+		<selectKey resultType="int" keyProperty="lno" order="BEFORE">
+			select blost_seq.nextval from dual
+		</selectKey>
+		insert into blost values(#{lno},#{lid},#{lemail},#{lkind},#{lcolor}
+			,#{ltitle},#{lcontent},#{answer},#{lfile},9,9,sysdate)	
+	</insert>
+	
+	<update id="updatelostProducts">
+		update blost set lid=#{lid},lemail=#{lemail},lkind=#{lkind},lcolor=#{lcolor}
+		,ltitle=#{ltitle},lcontent=#{lcontent},lfile=#{lfile} where lno=#{lno}
+	</update>	
+	
+	<delete id="deleteLostProducts" >
+		delete from blost where lno=#{lno}
+	</delete>
+	
+	<select id="selectLostProductsCount" resultType="int">
+		select count(*) from blost
+	</select>
+	
+	<select id="selectBlostList" resultType="Blost">
+		select * from blost order by lno
+	</select>
+	
+	<select id="selectBlostBoardList" resultType="Blost">
+		select * from (select rownum rn, blost.*from(select * from blost order by lno desc)blost)
+		where rn between #{startRow} and #{endRow}
+	</select>
+	
+</mapper>

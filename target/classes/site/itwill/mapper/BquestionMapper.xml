@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+이름       널?       유형            
+
+ID       NOT NULL VARCHAR2(20)  
+PASSWD            VARCHAR2(100) 
+NAME              VARCHAR2(20)  
+ZIPCODE           VARCHAR2(10)  
+ADDRESS1          VARCHAR2(100) 
+ADDRESS2          VARCHAR2(100) 
+ADDRESS3          VARCHAR2(100) 
+PHONE             VARCHAR2(20)  
+EMAIL             VARCHAR2(30)  
+GENDER            VARCHAR2(10)  
+BIRTHDAY          DATE          
+STATUS            NUMBER(1)   
+
+ 이름        널?       유형            
+
+QNO       NOT NULL NUMBER(5)     -게시글번호
+QNAME              VARCHAR2(10)  -이름
+QEMAIL             VARCHAR2(20)  -이메일
+QID                VARCHAR2(20)  -아이디
+QCATEGORY          VARCHAR2(20)  -카테고리
+QKIND              VARCHAR2(10)  -종류
+QTITLE             VARCHAR2(20)  -제목
+QCONTENT           VARCHAR2(500) -내용
+QFILE              VARCHAR2(20)  -파일
+QANSWER            VARCHAR2(500) -답변
+QSTATUS            NUMBER(1)     -답변1, 미답변9
+STATUS             NUMBER(1)     -관리자9, 회원1
+QDATE              DATE    		 -날짜	
+-->
+<mapper namespace="site.itwill.mapper.BquestionMapper">	
+	
+
+	<!-- 게시물 추가 -->
+	<insert id="insertQuestionBoard">
+		<selectKey resultType="int" keyProperty="qno" order="BEFORE">
+			select bquestion_seq.nextval from dual
+		</selectKey>
+		insert into bquestion values(#{qno}, #{qname},#{qemail},#{qid},#{qcategory}
+			,#{qkind},#{qtitle},#{qcontent},#{qfile},#{qanswer},9,9,sysdate)
+	</insert>
+	
+	<!-- 게시물 수정 -->
+	<update id="updateQuestionBoard">
+		update bquestion set qname=#{qname}, qemail=#{qemail}, qcategory=#{qcategory}
+			, qkind=#{qkind}, qtitle=#{qtitle}, qcontent=#{qcontent}, qfile=#{qfile} where qno=#{qno}
+	</update>
+	
+	<!-- 게시물 삭제 -->
+	<delete id="deleteQuestionBoard">
+		delete from bquestion where qno=#{qno}
+	</delete>
+
+	<!-- 게시물 번호를 전달받은 question 목록 -->	
+	<select id="selectQuestionBoard" resultType="Bquestion">
+		select * from bquestion where qno=#{qno}	
+	</select>
+	
+	<!-- 게시물 번호 counting -->
+	<select id="selectQuestionBoardCount" resultType="int">
+		select count(*) from bquestion
+	</select>
+	
+	<!-- 회원테이블 join qno 나열 -->
+	<select id="selectQuestionList" resultType="Bquestion">
+		select * from bquestion order by qno desc
+	</select>
+	
+	<select id="selectQuestionBoardList" resultType="Bquestion">
+		select * from (select rownum rn, question.* from(select * from bquestion
+			order by qno desc)question)where rn between #{startRow} and #{endRow}
+	</select>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+

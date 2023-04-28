@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="site.itwill.mapper.RestBoardMapper">
+	<insert id="insertRestBoard">
+		<selectKey resultType="int" keyProperty="no" order="BEFORE">
+			select rest_board_seq.nextval from dual
+		</selectKey>
+		insert into rest_board (no, num, writer, content, regdate) values(#{no},#{num},#{writer},#{content},sysdate)		
+	</insert>
+	
+	<update id="updateRestBoard">
+		update rest_board 
+		<set>
+			<if test="writer=null and writer!=''">
+				writer=#{writer}
+			</if>
+			<if test="content=null and content!=''">
+				content=#{content}
+			</if>
+			<if test="num=null and num!=''">
+				num=#{num}
+			</if>
+		</set>
+		where no=#{no}		 
+	</update>
+	
+	<delete id="deleteRestBoard">
+		delete from rest_board where no = #{no}
+	</delete>
+	
+	<select id="selectRestBoard" resultType="RestBoard">
+		select * from rest_board where num = #{num}
+	</select>
+
+	<select id="selectRestBoardCount" resultType="int">
+		select count(*) from rest_board
+	</select>
+	
+	<select id="selectRestBoardList" resultType="RestBoard">
+		select * from (select rownum rn, board.* from (select * from rest_board 
+			order by no desc) board) where rn between #{startRow} and #{endRow}
+	</select>
+</mapper>
